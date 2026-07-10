@@ -1,0 +1,13 @@
+# Environnement Python
+venv/
+__pycache__/
+*.pyc
+
+# Captures d'écran et fichiers de diagnostic
+avant_clic*.png
+erreur_*.png
+debug_*.png
+debug_*.txt
+
+# Note : on NE met PAS data/*.csv ici — c'est justement ce qu'on veut
+# pousser vers GitHub pour que le dashboard en ligne reste à jour.

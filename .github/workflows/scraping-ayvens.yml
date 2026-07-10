@@ -1,0 +1,41 @@
+name: Scraping Ayvens
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer les dépendances
+        run: |
+          pip install -r requirements-scraping.txt
+          playwright install --with-deps chromium
+
+      - name: Lancer le scraping
+        run: python scraper_ayvens.py
+
+      - name: Pousser les données mises à jour
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/historique_ayvens.csv
+          git diff --cached --quiet && echo "Aucun changement à commiter." || (
+            git commit -m "Mise à jour automatique Ayvens (GitHub Actions) - $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase origin main
+            git push
+          )
